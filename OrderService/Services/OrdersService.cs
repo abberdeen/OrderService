@@ -46,7 +46,12 @@ namespace OrderService
                 OrderStatus = order.OrderStatusId,
                 FullName = order.FullName,
                 OrderItems = order.OrderItems
-                        .Select(x => new OrderItemDto() { Count = x.Count, ProductId = x.ProductId })
+                        .Select(x => new OrderItemDto()
+                        {
+                            RowId = x.RowId,
+                            Count = x.Count,
+                            ProductId = x.ProductId
+                        })
                         .ToList()
             };
         }
@@ -56,7 +61,7 @@ namespace OrderService
             var newOrder = new Order
             {
                 FullName = order.FullName,
-                OrderStatusId = default,
+                OrderStatusId = order.OrderStatus,
                 OrderItems = order.OrderItems.ConvertAll(orderOrderItem => new OrderItem
                 {
                     ProductId = orderOrderItem.ProductId,

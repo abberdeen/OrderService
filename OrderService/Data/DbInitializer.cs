@@ -1,5 +1,6 @@
 ﻿using OrderService.Models;
 using System;
+using System.Diagnostics;
 
 namespace OrderService.Data
 {
@@ -29,8 +30,17 @@ namespace OrderService.Data
             {
                 using (var context = serviceScope.ServiceProvider.GetService<OrdersContext>())
                 {
+                    //
+                    if (!context.OrderStatuses.Any())
+                    {
+                        context.OrderStatuses.AddRange(
+                            Enum.GetValues(typeof(OrderStatusEnum))
+                                .Cast<OrderStatusEnum>()
+                                .Select(x => new OrderStatus() { Id = (byte)x, Name = x.ToString() })
+                                .ToList());
+                    }
 
-                    //add admin user
+                    //
                     if (!context.Products.Any())
                     {
                         context.Products.AddRange(new List<Product>(){
