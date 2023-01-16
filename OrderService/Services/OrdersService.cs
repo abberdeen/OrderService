@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
+using OrderService.Exceptions;
 using OrderService.Models;
 using OrderService.Services.Dto;
 
@@ -50,7 +51,7 @@ namespace OrderService
             };
         }
 
-        public async Task Create(OrderDto order)
+        public async Task<Order> Create(OrderCreateDto order)
         {
             var newOrder = new Order
             {
@@ -66,6 +67,8 @@ namespace OrderService
             await _ordersContext.Orders.AddAsync(newOrder);
 
             await _ordersContext.SaveChangesAsync();
+
+            return newOrder;
         }
 
         public async Task Update(short orderId, OrderDto order)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrderService.Models;
+using System;
 
 namespace OrderService.Data
 {
@@ -15,9 +16,9 @@ namespace OrderService.Data
         {
             using (var serviceScope = _scopeFactory.CreateScope())
             {
-                using (var context = serviceScope.ServiceProvider.GetService<AppDbContext>())
+                using (var context = serviceScope.ServiceProvider.GetService<OrdersContext>())
                 {
-                    context.Database.Migrate();
+                   
                 }
             }
         }
@@ -26,20 +27,17 @@ namespace OrderService.Data
         {
             using (var serviceScope = _scopeFactory.CreateScope())
             {
-                using (var context = serviceScope.ServiceProvider.GetService<AppDbContext>())
+                using (var context = serviceScope.ServiceProvider.GetService<OrdersContext>())
                 {
 
                     //add admin user
-                    if (!context.Users.Any())
+                    if (!context.Products.Any())
                     {
-                        var adminUser = new User
-                        {
-                            IsActive = true,
-                            Username = "admin",
-                            Password = "admin1234", // should be hash
-                            SerialNumber = Guid.NewGuid().ToString()
-                        };
-                        context.Users.Add(adminUser);
+                        context.Products.AddRange(new List<Product>(){
+                            new Product() { Id = 1, Price = 10, Title = "Product 1" },
+                            new Product() { Id = 2, Price = 4.5m, Title = "Product 2" },
+                            new Product() { Id = 3, Price = 15.2m, Title = "Product 3" }
+                        });
                     }
 
                     context.SaveChanges();

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderService.Models;
 using OrderService.Services;
-using OrderService.Services.Data;
+using OrderService.Services.Dto;
 
 namespace OrderService.Controllers
 {
@@ -41,6 +41,14 @@ namespace OrderService.Controllers
             }
 
             return item;
+        }
+
+        [HttpPost(Name = "CreateOrder")]
+        public async Task<ActionResult> CreateAsync(OrderCreateDto order)
+        {
+            await _orderService.Create(order);
+
+            return Ok();
         }
     }
 }

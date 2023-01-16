@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Services;
-using OrderService.Services.Data;
+using OrderService.Services; 
+using OrderService.Services.Dto;
 
 namespace OrderService.Controllers
 {

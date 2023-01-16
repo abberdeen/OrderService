@@ -24,14 +24,7 @@ namespace OrderService.Data
                 .HasOne(s => s.Order)
                 .WithMany(c => c.OrderItems)
                 .HasForeignKey(s => s.OrderId);
-
-            //
-
-            modelBuilder.Entity<Product>().HasData(
-                new Product() { Id = 1, Price = 10, Title = "Product 1" },
-                new Product() { Id = 2, Price = 4.5m, Title = "Product 2" },
-                new Product() { Id = 3, Price = 15.2m, Title = "Product 3" });
-
+             
         }
 
 

@@ -2,11 +2,10 @@
 
 namespace OrderService.Services.Dto
 {
-    public class OrderDto
-    {
-        public short OrderId { get; set; }
+    public class OrderCreateDto
+    { 
         public string FullName { get; set; } = string.Empty;
         public OrderStatusEnum OrderStatus { get; set; }
-        public List<OrderItemDto> OrderItems { get; set; }
+        public List<OrderCreateItemDto> OrderItems { get; set; }
     }
 }
