@@ -5,7 +5,8 @@ namespace OrderService.Models
     public class OrderItem
     {
         [Key]
-        public int RowId { get; set; }  
+        public int RowId { get; set; }
+
         public short OrderId { get; set; }
         public sbyte ProductId { get; set; }
         public byte Count { get; set; }

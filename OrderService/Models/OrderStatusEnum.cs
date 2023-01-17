@@ -20,6 +20,6 @@
         /// <summary>
         /// Отменен
         /// </summary>
-        Canceled = 4 
+        Canceled = 4
     }
 }

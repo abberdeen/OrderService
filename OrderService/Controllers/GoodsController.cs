@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Services; 
+using OrderService.Services;
 using OrderService.Services.Dto;
 
 namespace OrderService.Controllers
@@ -8,7 +8,6 @@ namespace OrderService.Controllers
     [Route("[controller]")]
     public class GoodsController : ControllerBase
     {
-
         private readonly ILogger<GoodsController> _logger;
         private readonly GoodService _goodService;
 
@@ -24,7 +23,7 @@ namespace OrderService.Controllers
             return await _goodService.GetListAsync();
         }
 
-        [HttpGet("{article:int}", Name = "GetGoodByArticle")] 
+        [HttpGet("{article:int}", Name = "GetGoodByArticle")]
         public async Task<ActionResult<GoodDto>> GetByIdAsync(sbyte article)
         {
             if (article <= 0)

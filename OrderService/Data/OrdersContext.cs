@@ -24,9 +24,6 @@ namespace OrderService.Data
                 .HasOne(s => s.Order)
                 .WithMany(c => c.OrderItems)
                 .HasForeignKey(s => s.OrderId);
-             
         }
-
-
     }
 }

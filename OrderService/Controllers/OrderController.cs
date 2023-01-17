@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Exceptions;
 using OrderService.Services.Dto;
-using System;
 using System.Net;
 
 namespace OrderService.Controllers
@@ -11,7 +10,6 @@ namespace OrderService.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-
         private readonly ILogger<OrderController> _logger;
         private readonly OrdersService _orderService;
 
@@ -50,7 +48,7 @@ namespace OrderService.Controllers
 
             if (item != null)
             {
-                return item;               
+                return item;
             }
 
             return NotFound();
@@ -60,7 +58,7 @@ namespace OrderService.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(OrderDto), (int)HttpStatusCode.Created)]
         public async Task<ActionResult<OrderDto>> CreateAsync(OrderCreateDto order)
-        { 
+        {
             try
             {
                 var newOrder = await _orderService.CreateAsync(order);
@@ -87,7 +85,7 @@ namespace OrderService.Controllers
             {
                 var updatedOrder = await _orderService.UpdateAsync(ordernum, order);
                 if (updatedOrder != null)
-                { 
+                {
                     return updatedOrder;
                 }
             }
@@ -128,7 +126,6 @@ namespace OrderService.Controllers
             }
         }
 
-
         [HttpDelete("{ordernum:int}", Name = "DeleteOrder")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -144,10 +141,10 @@ namespace OrderService.Controllers
             {
                 return NotFound();
             }
-            catch (OrderUpdateException ex) 
+            catch (OrderUpdateException ex)
             {
                 return BadRequest(ex.Message);
-            } 
+            }
         }
-    } 
+    }
 }

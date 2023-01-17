@@ -9,6 +9,7 @@ namespace OrderService
     public class OrdersService
     {
         private readonly OrdersContext _ordersContext;
+
         public OrdersService(OrdersContext ordersContext)
         {
             _ordersContext = ordersContext;
@@ -26,11 +27,11 @@ namespace OrderService
                     OrderStatus = x.OrderStatusId,
                     FullName = x.FullName,
                     OrderItems = x.OrderItems
-                        .Select(x => new OrderItemDto() 
-                        { 
-                            RowId = x.RowId, 
-                            Count = x.Count, 
-                            ProductId = x.ProductId 
+                        .Select(x => new OrderItemDto()
+                        {
+                            RowId = x.RowId,
+                            Count = x.Count,
+                            ProductId = x.ProductId
                         })
                         .ToList()
                 });
@@ -46,7 +47,7 @@ namespace OrderService
         public async Task<OrderDto?> GetByIdAsync(short id)
         {
             var order = await _ordersContext.Orders
-                .Include(x=>x.OrderItems)
+                .Include(x => x.OrderItems)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (order == null)
@@ -164,7 +165,7 @@ namespace OrderService
             await _ordersContext.SaveChangesAsync();
         }
 
-        private async Task CheckOrderItemsRulesAsync(List<OrderItemDto> orderItems) 
+        private async Task CheckOrderItemsRulesAsync(List<OrderItemDto> orderItems)
         {
             if (orderItems.Count() > 10)
             {
@@ -184,7 +185,7 @@ namespace OrderService
             }
         }
 
-        private OrderDto MapToDto(Order order) 
+        private OrderDto MapToDto(Order order)
         {
             return new OrderDto()
             {
@@ -201,6 +202,6 @@ namespace OrderService
                         })
                         .ToList()
             };
-        } 
+        }
     }
 }

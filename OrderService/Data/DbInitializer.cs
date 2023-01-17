@@ -19,7 +19,6 @@ namespace OrderService.Data
             {
                 using (var context = serviceScope.ServiceProvider.GetService<OrdersContext>())
                 {
-                   
                 }
             }
         }

@@ -7,6 +7,7 @@ namespace OrderService.Services
     public class GoodService
     {
         private readonly OrdersContext _ordersContext;
+
         public GoodService(OrdersContext ordersContext)
         {
             _ordersContext = ordersContext;
