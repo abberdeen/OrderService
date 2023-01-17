@@ -46,7 +46,8 @@ namespace OrderService.Data
                         context.Products.AddRange(new List<Product>(){
                             new Product() { Id = 1, Price = 10, Title = "Product 1" },
                             new Product() { Id = 2, Price = 4.5m, Title = "Product 2" },
-                            new Product() { Id = 3, Price = 15.2m, Title = "Product 3" }
+                            new Product() { Id = 3, Price = 15.2m, Title = "Product 3" },
+                            new Product() { Id = 4, Price = 1600.0m, Title = "Product 4" }
                         });
                     }
 

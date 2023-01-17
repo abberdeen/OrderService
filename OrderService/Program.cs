@@ -10,7 +10,8 @@ builder.Services.AddScoped<OrdersService>();
 builder.Services.AddScoped<OrdersContext>();
 builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

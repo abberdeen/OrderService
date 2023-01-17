@@ -14,53 +14,59 @@ namespace OrderService
             _ordersContext = ordersContext;
         }
 
-        public async Task<List<OrderDto>> GetListAsync()
+        public async Task<List<OrderDto>> GetListAsync(DateTime? dateTimeFilter = null)
         {
-            return await _ordersContext.Orders
+            var query = _ordersContext.Orders
                 .Include(x => x.OrderItems)
                 .Where(x => x.OrderStatusId == OrderStatusEnum.Registered)
                 .Select(x => new OrderDto()
                 {
                     OrderId = x.Id,
+                    CreatedAt = x.CreatedAt,
                     OrderStatus = x.OrderStatusId,
                     FullName = x.FullName,
                     OrderItems = x.OrderItems
-                        .Select(x => new OrderItemDto() { Count = x.Count, ProductId = x.ProductId })
+                        .Select(x => new OrderItemDto() 
+                        { 
+                            RowId = x.RowId, 
+                            Count = x.Count, 
+                            ProductId = x.ProductId 
+                        })
                         .ToList()
-                })
-                .ToListAsync();
+                });
+
+            if (dateTimeFilter != null)
+            {
+                query = query.Where(x => x.CreatedAt.Date == dateTimeFilter.Value.Date);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<OrderDto?> GetByIdAsync(short id)
         {
-            var order = await _ordersContext.Orders.FirstOrDefaultAsync(x => x.Id == id);
+            var order = await _ordersContext.Orders
+                .Include(x=>x.OrderItems)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (order == null)
             {
                 return null;
             }
 
-            return new OrderDto()
-            {
-                OrderId = order.Id,
-                OrderStatus = order.OrderStatusId,
-                FullName = order.FullName,
-                OrderItems = order.OrderItems
-                        .Select(x => new OrderItemDto()
-                        {
-                            RowId = x.RowId,
-                            Count = x.Count,
-                            ProductId = x.ProductId
-                        })
-                        .ToList()
-            };
+            return MapToDto(order);
         }
 
-        public async Task<Order> Create(OrderCreateDto order)
+        public async Task<OrderDto> CreateAsync(OrderCreateDto order)
         {
+            await CheckOrderItemsRulesAsync(order.OrderItems
+                .Select(x => new OrderItemDto() { Count = x.Count, ProductId = x.ProductId })
+                .ToList());
+
             var newOrder = new Order
             {
                 FullName = order.FullName,
+                CreatedAt = DateTime.Now,
                 OrderStatusId = order.OrderStatus,
                 OrderItems = order.OrderItems.ConvertAll(orderOrderItem => new OrderItem
                 {
@@ -73,15 +79,17 @@ namespace OrderService
 
             await _ordersContext.SaveChangesAsync();
 
-            return newOrder;
+            return MapToDto(newOrder);
         }
 
-        public async Task Update(short orderId, OrderDto order)
+        public async Task<OrderDto?> UpdateAsync(short orderId, OrderDto order)
         {
             if (order.OrderStatus != OrderStatusEnum.Registered)
             {
                 throw new OrderUpdateException("Заказ может быть изменен только в статусе «Зарегистрирован».");
             }
+
+            await CheckOrderItemsRulesAsync(order.OrderItems);
 
             var existingOrder = await _ordersContext.Orders
                 .Include(x => x.OrderItems)
@@ -89,7 +97,7 @@ namespace OrderService
 
             if (existingOrder == null)
             {
-                return;
+                return null;
             }
 
             // Update parent
@@ -126,9 +134,11 @@ namespace OrderService
             }
 
             await _ordersContext.SaveChangesAsync();
+
+            return MapToDto(existingOrder);
         }
 
-        public async Task Delete(short orderId)
+        public async Task DeleteAsync(short orderId)
         {
             var existingOrder = await _ordersContext.Orders
               .Include(x => x.OrderItems)
@@ -136,12 +146,12 @@ namespace OrderService
 
             if (existingOrder == null)
             {
-                return;
+                throw new OrderNotFoundException();
             }
 
             if (existingOrder.OrderStatusId != OrderStatusEnum.Registered)
             {
-                throw new OrderUpdateException("Заказ может быть изменен только в статусе «Зарегистрирован».");
+                throw new OrderUpdateException("Заказ может быть удален только в статусе «Зарегистрирован».");
             }
 
             foreach (var existingOrderItem in existingOrder.OrderItems.ToList())
@@ -153,5 +163,44 @@ namespace OrderService
 
             await _ordersContext.SaveChangesAsync();
         }
+
+        private async Task CheckOrderItemsRulesAsync(List<OrderItemDto> orderItems) 
+        {
+            if (orderItems.Count() > 10)
+            {
+                throw new OrderCreateException("В одном заказе можно указать не больше 10 единиц товаров.");
+            }
+
+            var products = await _ordersContext.Products.Where(x => orderItems.Select(o => o.ProductId).Contains(x.Id)).ToListAsync();
+
+            if (products.Count() != orderItems.Count())
+            {
+                throw new OrderCreateException("Указаны несуществующие в базе артикулы товаров");
+            }
+
+            if (products.Sum(x => x.Price * orderItems.First(z => z.ProductId == x.Id).Count) > 15000)
+            {
+                throw new OrderCreateException("Сумма заказа не должна превышать 15000 у.е.");
+            }
+        }
+
+        private OrderDto MapToDto(Order order) 
+        {
+            return new OrderDto()
+            {
+                OrderId = order.Id,
+                OrderStatus = order.OrderStatusId,
+                CreatedAt = order.CreatedAt,
+                FullName = order.FullName,
+                OrderItems = order.OrderItems
+                        .Select(x => new OrderItemDto()
+                        {
+                            RowId = x.RowId,
+                            Count = x.Count,
+                            ProductId = x.ProductId
+                        })
+                        .ToList()
+            };
+        } 
     }
 }

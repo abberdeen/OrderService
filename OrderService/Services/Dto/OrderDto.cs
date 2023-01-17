@@ -6,6 +6,7 @@ namespace OrderService.Services.Dto
     {
         public short OrderId { get; set; }
         public string FullName { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
         public OrderStatusEnum OrderStatus { get; set; }
         public List<OrderItemDto> OrderItems { get; set; }
     }
